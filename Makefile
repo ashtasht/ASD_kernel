@@ -23,6 +23,10 @@ OBJS_ZIG = \
 
 default: asd_kernel
 
+install asd_kernel:
+	mkdir -p $(SYSROOT)/boot
+	cp asd_kernel $(SYSROOT)/boot/
+
 asd_kernel: $(OBJS_ZIG) $(OBJS_ASM) $(ARCHDIR)/linker.ld
 	$(ZIGC) build-exe $(ZIGFLAGS) --name asd_kernel --linker-script $(ARCHDIR)/linker.ld --object $(shell echo $(OBJS_ASM) $(OBJS_ZIG) | sed 's/ / --object /g')
 
