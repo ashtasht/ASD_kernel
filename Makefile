@@ -19,19 +19,21 @@ OBJS_ZIG = \
  src/asd_kernel.o
 
 .SUFFIXES: .o .zig .asm
-.PHONY: default default
+.PHONY: default install clean
 
-default: asd_kernel
+default: asd_kernel.bin
 
-install asd_kernel:
+install asd_kernel.bin:
 	mkdir -p $(SYSROOT)/boot
-	cp asd_kernel $(SYSROOT)/boot/
+	cp asd_kernel.bin $(SYSROOT)/boot/
 
-asd_kernel: $(OBJS_ZIG) $(OBJS_ASM) $(ARCHDIR)/linker.ld
-	$(ZIGC) build-exe $(ZIGFLAGS) --name asd_kernel --linker-script $(ARCHDIR)/linker.ld --object $(shell echo $(OBJS_ASM) $(OBJS_ZIG) | sed 's/ / --object /g')
+asd_kernel.bin: $(OBJS_ZIG) $(OBJS_ASM) $(ARCHDIR)/linker.ld
+	$(ZIGC) build-exe $(ZIGFLAGS) --name asd_kernel.bin \
+		--linker-script $(ARCHDIR)/linker.ld \
+		--object $(shell echo $(OBJS_ASM) $(OBJS_ZIG) | sed 's/ / --object /g')
 
-src/boot.o:
-	$(NASMC) $(NASMFLAGS) src/boot.asm
+.asm.o:
+	$(NASMC) $(NASMFLAGS) $<
 
 .zig.o:
 	$(ZIGC) build-obj $< --output-dir $(dir $@) $(ZIGFLAGS)
