@@ -33,14 +33,14 @@ header_end:
 ; define a stack
 section .bss
 	align	16
-	stack_bottom:	resb 16384
-	stack_top:
+	stack_start:	resb 16384
+	stack_end:
 
 section .text
 global _start:function (_start.end - _start)
 _start:
 	; initialize a stack
-	mov	esp, stack_top
+	mov	esp, stack_end
 
 	; call the main function
 	extern	kmain
