@@ -18,7 +18,7 @@ HEADER_LEN	equ	(header_end - header_start)
 CHECKSUM	equ	- (MAGIC + ARCH + HEADER_LEN)
 
 ; multiboot header
-section .multiboot
+section .multiboot_header
 align	4
 header_start:
 	dd	MAGIC
