@@ -1,24 +1,23 @@
 # the target architecture
-ARCH = i386
+ARCH = i686
 ARCHDIR = src/arch/$(ARCH)
 
 # programs used
 NASMC = nasm
-ZIGC = zig
+CC = i686-elf-gcc
 
 # architecture-specific configurations
 include $(ARCHDIR)/make.conf
 
-NASMFLAGS = $(ARCH_NASM_FLAGS)
-ZIGFLAGS = --release-small $(ARCH_ZIG_FLAGS)
+NASMFLAGS = $(ARCH_NASMFLAGS)
+CFLAGS = -Wall -Wextra -ffreestanding -O3 $(ARCH_CFLAGS)
 
 # lists of files
-OBJS_ASM = \
- src/boot.o
-OBJS_ZIG = \
+OBJS = \
+ src/boot.o \
  src/asd_kernel.o
 
-.SUFFIXES: .o .zig .asm
+.SUFFIXES: .o .c .asm
 .PHONY: default install clean
 
 default: asd_kernel.bin
@@ -27,16 +26,15 @@ install asd_kernel.bin:
 	mkdir -p $(SYSROOT)/boot
 	cp asd_kernel.bin $(SYSROOT)/boot/
 
-asd_kernel.bin: $(OBJS_ZIG) $(OBJS_ASM) $(ARCHDIR)/linker.ld
-	$(ZIGC) build-exe $(ZIGFLAGS) --name asd_kernel.bin \
-		--linker-script $(ARCHDIR)/linker.ld \
-		--object $(shell echo $(OBJS_ASM) $(OBJS_ZIG) | sed 's/ / --object /g')
+asd_kernel.bin: $(OBJS) $(ARCHDIR)/linker.ld
+	$(CC) $(CFLAGS) -T $(ARCHDIR)/linker.ld -nostdlib -nodefaultlibs -lgcc \
+		-o asd_kernel.bin $(OBJS)
 
 .asm.o:
 	$(NASMC) $(NASMFLAGS) $<
 
-.zig.o:
-	$(ZIGC) build-obj $< --output-dir $(dir $@) $(ZIGFLAGS)
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	#$(RM) $(BIN_DIR)/*

@@ -8,7 +8,7 @@ FLAGS	equ MBALIGN | MEMINFO
 ; multiboot magic number
 MAGIC	equ	0xE85250D6
 
-; CPU architecture (i386 protected mode)
+; CPU architecture (i686 protected mode)
 ARCH	equ	0
 
 ; multiboot header length
@@ -43,8 +43,8 @@ _start:
 	mov	esp, stack_end
 
 	; call the main function
-	extern	kmain
-	call	kmain
+	extern	kernel_main
+	call	kernel_main
 
 	cli
 
