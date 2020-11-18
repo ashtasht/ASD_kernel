@@ -1,21 +1,27 @@
 # the target architecture
 ARCH = i686
-ARCHDIR = src/arch/$(ARCH)
+ARCHDIR = arch/$(ARCH)
 
 # programs used
 NASMC = nasm
 CC = i686-elf-gcc
 
 # architecture-specific configurations
-include $(ARCHDIR)/make.conf
+include src/$(ARCHDIR)/make.conf
 
 NASMFLAGS = $(ARCH_NASMFLAGS)
 CFLAGS = -Wall -Wextra -ffreestanding -O3 $(ARCH_CFLAGS)
 
 # lists of files
 OBJS = \
- src/boot.o \
- src/asd_kernel.o
+ src/asd_kernel.o \
+ src/$(ARCHDIR)/boot.o \
+ src/$(ARCHDIR)/kernel/gdt.o \
+ src/$(ARCHDIR)/kernel/load_gdt.o
+
+INCLUDE = \
+ -iquote include/ \
+ -iquote include/$(ARCHDIR)/
 
 .SUFFIXES: .o .c .asm
 .PHONY: default install clean
@@ -26,15 +32,15 @@ install asd_kernel.bin:
 	mkdir -p $(SYSROOT)/boot
 	cp asd_kernel.bin $(SYSROOT)/boot/
 
-asd_kernel.bin: $(OBJS) $(ARCHDIR)/linker.ld
-	$(CC) $(CFLAGS) -T $(ARCHDIR)/linker.ld -nostdlib -nodefaultlibs -lgcc \
+asd_kernel.bin: $(OBJS) src/$(ARCHDIR)/linker.ld
+	$(CC) $(CFLAGS) -T src/$(ARCHDIR)/linker.ld -nostdlib -nodefaultlibs -lgcc\
 		-o asd_kernel.bin $(OBJS)
 
 .asm.o:
 	$(NASMC) $(NASMFLAGS) $<
 
 .c.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $(INCLUDE) -o $@ $<
 
 clean:
 	#$(RM) $(BIN_DIR)/*
