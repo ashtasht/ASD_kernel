@@ -1,5 +1,7 @@
 ; bootstrap
 
+extern	kernel_main
+
 ; multiboot flags
 MBALIGN	equ	1 << 0
 MEMINFO	equ	1 << 1
@@ -43,7 +45,6 @@ _start:
 	mov	esp, stack_end
 
 	; call the main function
-	extern	kernel_main
 	call	kernel_main
 
 	cli
@@ -52,5 +53,4 @@ _start:
 .hang:
 	hlt
 	jmp .hang
-
 .end:
