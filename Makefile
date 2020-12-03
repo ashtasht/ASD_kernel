@@ -20,7 +20,6 @@ OBJS = \
  src/$(ARCHDIR)/arch/asm/load_gdt.o \
  src/$(ARCHDIR)/arch/asm/out_8.o \
  src/$(ARCHDIR)/arch/boot.o \
- src/$(ARCHDIR)/arch/gdt.o \
  src/$(ARCHDIR)/arch/idt.o \
  src/$(ARCHDIR)/arch/irqs.o \
  src/$(PLATFORMDIR)/platform/pic.o \
