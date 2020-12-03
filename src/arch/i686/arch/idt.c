@@ -6,5 +6,4 @@ void get_idt(uint64_t * a)
 	{
 		a[i] = structure_idt_entry(& irq0, 0x008, 0x8E);
 	}
-	irq0();
 }

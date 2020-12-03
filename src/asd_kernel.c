@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "arch/asm/lgdt.h"
+#include "arch/asm/load_gdt.h"
 #include "arch/asm/lidt.h"
 #include "arch/asm/out_8.h"
 #include "arch/descriptor_table_selector.h"
@@ -14,7 +14,7 @@
 #define VGA_HEIGHT 25
 
 /* Magenta foreground on black background */
-#define COLOR 0x05
+#define COLOR 0x0A
 
 /* calculate the length of a given characters array */
 size_t strlen(const char * s) 
@@ -67,10 +67,11 @@ char * itoa(char * p, uint32_t a)
 	return p;
 }
 
-void yo(uint32_t b)
+void yo()
 {
-	uint8_t a = 2;
+	uint8_t a = 4;
 	log((uint16_t *) 0xB8000, & a, "and her daddy has told her to go");
+	send_eoi();
 }
 
 void kernel_main(void) 
@@ -83,9 +84,11 @@ void kernel_main(void)
 	gdt_ptr.limit = sizeof(gdt);
 	gdt_ptr.base_low = 0x0;
 	gdt_ptr.base_high = (uint32_t) & gdt;
-	lgdt(gdt_ptr);
+	load_gdt(gdt_ptr);
 
 	/* initialize the interrupt descriptor table */
+	// TODO slowly enable until I understand the problem...
+	/*
 	uint64_t idt [256];
 	get_idt(idt);
 
@@ -94,8 +97,9 @@ void kernel_main(void)
 	idt_ptr.base_low = 0x0;
 	idt_ptr.base_high = (uint32_t) & idt;
 	lidt(idt_ptr);
-	asm volatile("sti"); /* TODO no inline assembly... */
+	asm volatile("sti");
 	pic_remap_irqs();
+	*/
 
 	/* initialize the screen */
 	uint16_t * screen_buff = (uint16_t *) 0xB8000;
@@ -106,12 +110,5 @@ void kernel_main(void)
 	clear_buffer(screen_buff);
 	log(screen_buff, & c_y, "Welcome to ASD version 0.0.1!");
 
-	/* beep */
-	/* set the frequency to 1760 Hz (A6) */
-	uint32_t div = 1193180 / 1760;
- 	out_8(0x43, 0xb6);
- 	out_8(0x42, (uint8_t) (div) );
- 	out_8(0x42, (uint8_t) (div >> 8));
-	/* play */
-	out_8(0x61, 3);
+	//asm volatile("int $49");
 }

@@ -20,3 +20,9 @@ void pic_remap_irqs()
 	out_8(PIC_1_BASE + 1, 0x0);
 	out_8(PIC_2_BASE + 1, 0x0);
 }
+
+void send_eoi()
+{
+	out_8(PIC_1_BASE, 0x20);
+	out_8(PIC_2_BASE, 0x20);
+}

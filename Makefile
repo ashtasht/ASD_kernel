@@ -16,8 +16,8 @@ CFLAGS = -Wall -Wextra -ffreestanding -O3 $(ARCH_CFLAGS)
 
 # lists of files
 OBJS = \
- src/$(ARCHDIR)/arch/asm/lgdt.o \
  src/$(ARCHDIR)/arch/asm/lidt.o \
+ src/$(ARCHDIR)/arch/asm/load_gdt.o \
  src/$(ARCHDIR)/arch/asm/out_8.o \
  src/$(ARCHDIR)/arch/boot.o \
  src/$(ARCHDIR)/arch/gdt.o \
@@ -40,9 +40,9 @@ install asd_kernel.bin:
 	mkdir -p $(SYSROOT)/boot
 	cp asd_kernel.bin $(SYSROOT)/boot/
 
-asd_kernel.bin: $(OBJS) src/$(ARCHDIR)/arch/linker.ld
-	$(CC) $(CFLAGS) -T src/$(ARCHDIR)/arch/linker.ld -nostdlib -nodefaultlibs -lgcc\
-		-o asd_kernel.bin $(OBJS)
+asd_kernel.bin: $(OBJS)
+	$(CC) $(CFLAGS) -T src/$(ARCHDIR)/arch/linker.ld -nostdlib \
+	 -nodefaultlibs -lgcc -o asd_kernel.bin $(OBJS)
 
 .asm.o:
 	$(NASMC) $(NASMFLAGS) $<

@@ -3,7 +3,7 @@
 void get_gdt(uint64_t * a)
 {
 	/* null entry */
-	a[0] = structure_gdt_entry(0, 0, 0, 0);
+	a[0] = 0;
 
 	/* privileged code entry */
 	a[1] = structure_gdt_entry(0, 1 << 26, 0x9A, 0x0C);

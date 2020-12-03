@@ -3,4 +3,7 @@
 
 void pic_remap_irqs();
 
+/* send an end of interrupt signal */
+void send_eoi();
+
 #endif
