@@ -5,7 +5,7 @@ ARCHDIR = arch/$(ARCH)
 PLATFORMDIR = platform/$(PLATFORM)
 
 # programs used
-NASMC = nasm
+NASM = nasm
 CC = i686-elf-gcc
 
 # architecture-specific configurations
@@ -44,7 +44,7 @@ asd_kernel.bin: $(OBJS)
 	 -nodefaultlibs -lgcc -o asd_kernel.bin $(OBJS)
 
 .asm.o:
-	$(NASMC) $(NASMFLAGS) $<
+	$(NASM) $(NASMFLAGS) $<
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDE) -o $@ $<
