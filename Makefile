@@ -16,13 +16,13 @@ CFLAGS = -Wall -Wextra -ffreestanding -O3 $(ARCH_CFLAGS)
 
 # lists of files
 OBJS = \
- src/$(ARCHDIR)/arch/asm/lidt.o \
+ src/$(ARCHDIR)/arch/asm/load_idt.o \
  src/$(ARCHDIR)/arch/asm/load_gdt.o \
  src/$(ARCHDIR)/arch/asm/out_8.o \
  src/$(ARCHDIR)/arch/boot.o \
  src/$(ARCHDIR)/arch/idt.o \
  src/$(ARCHDIR)/arch/irqs.o \
- src/$(PLATFORMDIR)/platform/pic.o \
+ src/$(ARCHDIR)/arch/pic.o \
  src/asd_kernel.o
 
 INCLUDE = \

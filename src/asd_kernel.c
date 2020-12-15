@@ -3,12 +3,12 @@
 #include <stdint.h>
 
 #include "arch/asm/load_gdt.h"
-#include "arch/asm/lidt.h"
+#include "arch/asm/load_idt.h"
 #include "arch/asm/out_8.h"
 #include "arch/descriptor_table_selector.h"
 #include "arch/gdt.h"
 #include "arch/idt.h"
-#include "platform/pic.h"
+#include "arch/pic.h"
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
@@ -26,6 +26,15 @@ size_t strlen(const char * s)
 	for (a = s; * a; a ++);
 
 	return a - s;
+}
+
+void hex(uint64_t a, char * o)
+{
+	for (uint8_t i = 15; i < 16; i --)
+	{
+		o[i] = "0123456789ABCDEF"[a % 16];
+		a >>= 4;
+	}
 }
 
 /* clear any characters from the screen */
@@ -65,13 +74,20 @@ void log(const char * data)
 	(* c_y) ++;
 }
 
+static inline void log_hex(uint64_t a)
+{
+	char string [8];
+	hex(a, string);
+	log(string);
+}
+
 void yo()
 {
 	log("and her daddy has told her to go");
 	send_eoi();
 }
 
-void kernel_main(void) 
+void kernel_main()
 {
 	/* load the global descriptor table */
 	struct descriptor_table_selector gdt_ptr;
@@ -81,11 +97,10 @@ void kernel_main(void)
 	load_gdt(gdt_ptr);
 
 	/* initialize the interrupt descriptor table */
-	// TODO slowly enable until I understand the problem...
-	/*
 	uint64_t idt [256];
 	get_idt(idt);
 
+	/*
 	struct descriptor_table_selector idt_ptr;
 	idt_ptr.limit = sizeof(idt);
 	idt_ptr.base_low = 0x0;
@@ -98,6 +113,16 @@ void kernel_main(void)
 	/* clear and initialize the screen */
 	clear_buffer();
 	log("Welcome to ASD version 0.0.1!");
+	log("gdt[0]:");
+	log_hex(gdt[0]);
+	log("gdt[1]:");
+	log_hex(gdt[1]);
+	log("gdt[2]:");
+	log_hex(gdt[2]);
+	log("gdt[3]:");
+	log_hex(gdt[3]);
+	log("gdt[4]:");
+	log_hex(STRUCTURE_GDT_ENTRY(0x11 << 26, 1 << 26, 0xF2, 0x0C));
 
 	//asm volatile("int $49");
 }

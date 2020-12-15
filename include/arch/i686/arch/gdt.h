@@ -25,11 +25,12 @@ uint64_t gdt [] = {
 	/* privileged code entry */
 	STRUCTURE_GDT_ENTRY(0, 1 << 26, 0x9A, 0x0C),
 	/* privileged data entry */
-	STRUCTURE_GDT_ENTRY(0x01 << 26, 1 << 26, 0x92, 0x0C),
+	STRUCTURE_GDT_ENTRY(0x1 << 26, 1 << 26, 0x92, 0x0C),
 	/* userspace code entry */
-	STRUCTURE_GDT_ENTRY(0x10 << 26, 1 << 26, 0xFA, 0x0C),
+	STRUCTURE_GDT_ENTRY(0x2 << 26, 1 << 26, 0xFA, 0x0C),
 	/* userspace data entry */
-	STRUCTURE_GDT_ENTRY(0x11 << 26, 1 << 26, 0xF2, 0x0C)
+	STRUCTURE_GDT_ENTRY(0x3 << 26, 1 << 26, 0xF2, 0x0C),
+	STRUCTURE_GDT_ENTRY(14, 15, 15, 2)
 };
 
 #endif

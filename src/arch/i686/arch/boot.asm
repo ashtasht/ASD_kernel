@@ -1,5 +1,3 @@
-; bootstrap
-
 extern	kernel_main
 
 ; multiboot flags

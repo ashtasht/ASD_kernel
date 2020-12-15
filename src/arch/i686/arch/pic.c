@@ -1,4 +1,4 @@
-#include "platform/pic.h"
+#include "arch/pic.h"
 
 #include "arch/asm/out_8.h"
 
