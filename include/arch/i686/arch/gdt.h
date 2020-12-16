@@ -1,12 +1,23 @@
+/*!
+ * \file include/arch/i686/arch/gdt.h
+ *
+ * Contains the definition of the contents of the global descriptor table
+ * \see AMD64 Architecture Programmer's Manual, Volume 2 --- 4.7
+ */
+
 #ifndef GDT_H_
 #define GDT_H_
 
 #include <stdint.h>
 
-/*
- * encodes a GDT entry
+/*!
+ * \brief Encodes a GDT entry as it should be encoded to memory
  *
- * See the AMD64 Architecture Programmer’s Manual, Volume 2 -- 4.7.1.
+ * \param base The base address of the memory segment
+ * \param limit The size of the memory segment
+ * \param flags_0,flags_1 The flags of the memory segment
+ *
+ * \returns The entry encoded as 8 bytes
  */
 #define STRUCTURE_GDT_ENTRY(base, limit, flags_0, flags_1) \
 	(0 \
@@ -19,6 +30,10 @@
 		| (((uint64_t) (base) & 0x0000FFFF) << 16) \
 		| ((uint64_t) (limit) & 0x0000FFFF))
 
+/*!
+ * The contents of the GDT (which will be coppied to a CPU
+ * register using \ref load_gdt)
+ */
 uint64_t gdt [] = {
 	/* null entry */
 	0,

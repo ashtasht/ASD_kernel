@@ -10,6 +10,9 @@
 #include "arch/idt.h"
 #include "arch/pic.h"
 
+/* TODO remove */
+#include "arch/asm/isr.h"
+
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 #define BUFF 0xB8000
@@ -84,52 +87,64 @@ static inline void log_hex(uint64_t a)
 void yo()
 {
 	log("and her daddy has told her to go");
-	pic_send_eoi(10); /* TODO change 10 to the real */
+	log("man you got interruptssssssss");
+	//pic_send_eoi(0);
+}
+
+static inline bool are_interrupts_enabled() {
+	unsigned long flags;
+	asm volatile ( "pushf\n\t"
+		"pop %0"
+		: "=g"(flags) );
+	return flags & (1 << 9);
 }
 
 void kernel_main()
 {
 	/* initialize the screen */
 	clear_buffer();
-	log("screen initialized");
+	log("VGA text mode screen cleared");
 
 	/* load the global descriptor table */
+	log("loading the GDT");
 	struct descriptor_table_selector gdt_ptr;
 	gdt_ptr.limit = sizeof(gdt);
 	gdt_ptr.base_low = 0x0;
 	gdt_ptr.base_high = (uint32_t) & gdt;
 	load_gdt(gdt_ptr);
 
-	log("global descriptor table loaded");
+	/* initialize the PICs */
+	log("initializing the PICs");
+	pics_init();
+	uint8_t pic_1_mask = 0xFF;
+	uint8_t pic_2_mask = 0xFF;
+	//pic_irq_set(2, 1, & pic_1_mask, & pic_2_mask);
+	pic_write_irqs(pic_1_mask, pic_2_mask);
 
-	/* initialize the interrupt descriptor table */
+	/* load the interrupt descriptor table */
+	log("loading the IDT");
 	uint64_t idt [256];
 	get_idt(idt);
-
-	/*
-	asm volatile("sti");
-	pic_remap_irqs();
 	struct descriptor_table_selector idt_ptr;
 	idt_ptr.limit = sizeof(idt);
 	idt_ptr.base_low = 0x0;
 	idt_ptr.base_high = (uint32_t) & idt;
 	load_idt(idt_ptr);
-	*/
+	asm volatile("sti");
+
+	log("checking if the interrupts are enabled");
+	if (are_interrupts_enabled())
+	{
+		log("interrupts are enabled");
+	}
+
+	log("trying to raise an interrupt (division by 0)");
+	int a = 34/0;
+	if (a > 5)
+		log("wait wtf");
+	else
+		log("okeyy");
 
 	/* clear and initialize the screen */
-	clear_buffer();
 	log("Welcome to ASD version 0.0.1!");
-	log_hex(are_interrupts_enabled());
-	log("gdt[0]:");
-	log_hex(gdt[0]);
-	log("gdt[1]:");
-	log_hex(gdt[1]);
-	log("gdt[2]:");
-	log_hex(gdt[2]);
-	log("gdt[3]:");
-	log_hex(gdt[3]);
-	log("gdt[4]:");
-	log_hex(gdt[4]);
-
-	//asm volatile("int $49");
 }

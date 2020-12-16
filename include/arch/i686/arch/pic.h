@@ -1,3 +1,7 @@
+/*!
+ * \file include/arch/i686/arch/pic.h
+ */
+
 #ifndef PIC_H_
 #define PIC_H_
 
@@ -8,7 +12,7 @@
 /*!
  * \brief Initializes both the 8259 PICs
  */
-void pic_init();
+void pics_init();
 
 /*!
  * \brief Enables or disables a given IRQ
@@ -34,19 +38,9 @@ uint8_t pic_irq_set(uint8_t, uint8_t, uint8_t *, uint8_t *);
  */
 void pic_write_irqs(uint8_t, uint8_t);
 
-/* send an end of interrupt signal */
 /*!
  * \brief Sends an EOI (end of interrupt) signal
  */
 void pic_send_eoi(uint8_t);
-
-/* TODO __asm__ volatile bad, NASM good */
-static inline uint8_t are_interrupts_enabled() {
-	unsigned long flags;
-	asm volatile ( "pushf\n\t"
-		"pop %0"
-		: "=g"(flags) );
-	return flags & (1 << 9);
-}
 
 #endif

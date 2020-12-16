@@ -6,7 +6,7 @@
 #define PIC_1_BASE 0x20
 #define PIC_2_BASE 0xA0
 
-void pic_init()
+void pics_init()
 {
 	out_8(PIC_1_BASE, 0x11);
 	out_8(PIC_2_BASE, 0x11);
