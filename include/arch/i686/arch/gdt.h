@@ -10,27 +10,26 @@
  */
 #define STRUCTURE_GDT_ENTRY(base, limit, flags_0, flags_1) \
 	(0 \
-		| ((uint64_t) base & 0xFF000000) \
-		| (((uint64_t) flags_1 & 0x0F) << 20) \
-		| ((uint64_t) limit & 0x000F0000) \
-		| (((uint64_t) flags_0 & 0xFF) << 8) \
-		| ((uint64_t) base & 0x00FF0000)) << 32 \
+		| ((uint64_t) (base) & 0xFF000000) \
+		| (((uint64_t) (flags_1) & 0x0F) << 20) \
+		| ((uint64_t) (limit) & 0x000F0000) \
+		| (((uint64_t) (flags_0) & 0xFF) << 8) \
+		| ((uint64_t) (base) & 0x00FF0000)) << 32 \
 	| (0 \
-		| (((uint64_t) base & 0x0000FFFF) << 16) \
-		| ((uint64_t) limit & 0x0000FFFF))
+		| (((uint64_t) (base) & 0x0000FFFF) << 16) \
+		| ((uint64_t) (limit) & 0x0000FFFF))
 
 uint64_t gdt [] = {
 	/* null entry */
 	0,
 	/* privileged code entry */
-	STRUCTURE_GDT_ENTRY(0, 1 << 26, 0x9A, 0x0C),
+	STRUCTURE_GDT_ENTRY(0, (1 << 20) - 1, 0x9A, 0x0C),
 	/* privileged data entry */
-	STRUCTURE_GDT_ENTRY(0x1 << 26, 1 << 26, 0x92, 0x0C),
+	STRUCTURE_GDT_ENTRY(0, (1 << 20) - 1, 0x92, 0x0C),
 	/* userspace code entry */
-	STRUCTURE_GDT_ENTRY(0x2 << 26, 1 << 26, 0xFA, 0x0C),
+	STRUCTURE_GDT_ENTRY(0, (1 << 20) - 1, 0xFA, 0x0C),
 	/* userspace data entry */
-	STRUCTURE_GDT_ENTRY(0x3 << 26, 1 << 26, 0xF2, 0x0C),
-	STRUCTURE_GDT_ENTRY(14, 15, 15, 2)
+	STRUCTURE_GDT_ENTRY(0, (1 << 20) - 1, 0xF2, 0x0C),
 };
 
 #endif
