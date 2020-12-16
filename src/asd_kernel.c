@@ -84,11 +84,15 @@ static inline void log_hex(uint64_t a)
 void yo()
 {
 	log("and her daddy has told her to go");
-	send_eoi();
+	pic_send_eoi(10); /* TODO change 10 to the real */
 }
 
 void kernel_main()
 {
+	/* initialize the screen */
+	clear_buffer();
+	log("screen initialized");
+
 	/* load the global descriptor table */
 	struct descriptor_table_selector gdt_ptr;
 	gdt_ptr.limit = sizeof(gdt);
@@ -96,23 +100,26 @@ void kernel_main()
 	gdt_ptr.base_high = (uint32_t) & gdt;
 	load_gdt(gdt_ptr);
 
+	log("global descriptor table loaded");
+
 	/* initialize the interrupt descriptor table */
 	uint64_t idt [256];
 	get_idt(idt);
 
 	/*
+	asm volatile("sti");
+	pic_remap_irqs();
 	struct descriptor_table_selector idt_ptr;
 	idt_ptr.limit = sizeof(idt);
 	idt_ptr.base_low = 0x0;
 	idt_ptr.base_high = (uint32_t) & idt;
-	lidt(idt_ptr);
-	asm volatile("sti");
-	pic_remap_irqs();
+	load_idt(idt_ptr);
 	*/
 
 	/* clear and initialize the screen */
 	clear_buffer();
 	log("Welcome to ASD version 0.0.1!");
+	log_hex(are_interrupts_enabled());
 	log("gdt[0]:");
 	log_hex(gdt[0]);
 	log("gdt[1]:");
@@ -122,7 +129,7 @@ void kernel_main()
 	log("gdt[3]:");
 	log_hex(gdt[3]);
 	log("gdt[4]:");
-	log_hex(STRUCTURE_GDT_ENTRY(0x11 << 26, 1 << 26, 0xF2, 0x0C));
+	log_hex(gdt[4]);
 
 	//asm volatile("int $49");
 }
