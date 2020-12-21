@@ -106,7 +106,7 @@ void kernel_main()
 	log("loading the GDT");
 	struct descriptor_table_selector gdt_ptr;
 	gdt_ptr.limit = sizeof(gdt);
-	gdt_ptr.base_high = (uint32_t) & gdt;
+	gdt_ptr.base = (uint32_t) & gdt;
 	load_gdt(gdt_ptr);
 
 	/* initialize the PICs */
@@ -129,12 +129,8 @@ void kernel_main()
 	log_hex(idt[2]);
 	struct descriptor_table_selector idt_ptr;
 	idt_ptr.limit = sizeof(idt);
-	idt_ptr.base_high = (uint32_t) & idt;
+	idt_ptr.base = (uint32_t) & idt;
 	load_idt(idt_ptr);
-	/*
-	 * TODO understand why the fuck does running sti makes the
-	 * computer crash
-	 */
 	asm volatile("sti");
 
 	log("checking if the interrupts are enabled");
@@ -147,8 +143,6 @@ void kernel_main()
 		log("interrupts are not enabled");
 	}
 
-	// log("trying to raise an interrupt (division by 0)");
-	// __asm__  ("div %0" :: "r"(0));
 
 	/* clear and initialize the screen */
 	log("Welcome to ASD version 0.0.1!");
