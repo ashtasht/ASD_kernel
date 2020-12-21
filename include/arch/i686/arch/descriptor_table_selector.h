@@ -9,8 +9,6 @@ struct descriptor_table_selector
 {
 	uint16_t limit;
 
-	uint16_t base_low;
-
 	uint32_t base_high;
 }
 __attribute__((packed));

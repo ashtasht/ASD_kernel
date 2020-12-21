@@ -39,16 +39,17 @@ section .bss
 section .text
 global _start:function (_start.end - _start)
 _start:
+	; clear interrupts
+	cli
+
 	; initialize a stack
 	mov	esp, stack_end
 
 	; call the main function
 	call	kernel_main
 
-	cli
-
 ; infinite loop
 .hang:
 	hlt
-	jmp .hang
+	jmp	.hang
 .end:

@@ -1,5 +1,5 @@
 global load_idt
 
 load_idt:
-	lidt	[esp]
+	lidt	[esp+4]
 	ret

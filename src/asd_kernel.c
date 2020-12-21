@@ -10,9 +10,6 @@
 #include "arch/idt.h"
 #include "arch/pic.h"
 
-/* TODO remove */
-#include "arch/asm/isr.h"
-
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 #define BUFF 0xB8000
@@ -109,7 +106,6 @@ void kernel_main()
 	log("loading the GDT");
 	struct descriptor_table_selector gdt_ptr;
 	gdt_ptr.limit = sizeof(gdt);
-	gdt_ptr.base_low = 0x0;
 	gdt_ptr.base_high = (uint32_t) & gdt;
 	load_gdt(gdt_ptr);
 
@@ -125,11 +121,20 @@ void kernel_main()
 	log("loading the IDT");
 	uint64_t idt [256];
 	get_idt(idt);
+	log("idt[0]:");
+	log_hex(idt[0]);
+	log("idt[1]:");
+	log_hex(idt[1]);
+	log("idt[2]:");
+	log_hex(idt[2]);
 	struct descriptor_table_selector idt_ptr;
 	idt_ptr.limit = sizeof(idt);
-	idt_ptr.base_low = 0x0;
 	idt_ptr.base_high = (uint32_t) & idt;
 	load_idt(idt_ptr);
+	/*
+	 * TODO understand why the fuck does running sti makes the
+	 * computer crash
+	 */
 	asm volatile("sti");
 
 	log("checking if the interrupts are enabled");
@@ -137,13 +142,13 @@ void kernel_main()
 	{
 		log("interrupts are enabled");
 	}
-
-	log("trying to raise an interrupt (division by 0)");
-	int a = 34/0;
-	if (a > 5)
-		log("wait wtf");
 	else
-		log("okeyy");
+	{
+		log("interrupts are not enabled");
+	}
+
+	// log("trying to raise an interrupt (division by 0)");
+	// __asm__  ("div %0" :: "r"(0));
 
 	/* clear and initialize the screen */
 	log("Welcome to ASD version 0.0.1!");
