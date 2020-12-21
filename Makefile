@@ -5,13 +5,13 @@ ARCHDIR = arch/$(ARCH)
 PLATFORMDIR = platform/$(PLATFORM)
 
 # programs used
-NASM = nasm
+YASM = yasm
 CC = i686-elf-gcc
 
 # architecture-specific configurations
 include src/$(ARCHDIR)/arch/make.conf
 
-NASMFLAGS = $(ARCH_NASMFLAGS)
+YASMFLAGS = -pnasm $(ARCH_YASMFLAGS)
 CFLAGS = -Wall -Wextra -ffreestanding -O3 $(ARCH_CFLAGS)
 
 # lists of files
@@ -43,7 +43,7 @@ asd_kernel.bin: $(OBJS)
 	 -nodefaultlibs -lgcc -o asd_kernel.bin $(OBJS)
 
 .asm.o:
-	$(NASM) $(NASMFLAGS) $<
+	$(YASM) $(YASMFLAGS) -o $@ $<
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(INCLUDE) -o $@ $<
