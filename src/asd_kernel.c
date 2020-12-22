@@ -5,6 +5,7 @@
 #include "arch/asm/load_gdt.h"
 #include "arch/asm/load_idt.h"
 #include "arch/asm/out_8.h"
+#include "arch/asm/set_interrupt.h"
 #include "arch/descriptor_table_selector.h"
 #include "arch/gdt.h"
 #include "arch/idt.h"
@@ -121,17 +122,11 @@ void kernel_main()
 	log("loading the IDT");
 	uint64_t idt [256];
 	get_idt(idt);
-	log("idt[0]:");
-	log_hex(idt[0]);
-	log("idt[1]:");
-	log_hex(idt[1]);
-	log("idt[2]:");
-	log_hex(idt[2]);
 	struct descriptor_table_selector idt_ptr;
 	idt_ptr.limit = sizeof(idt);
 	idt_ptr.base = (uint32_t) & idt;
 	load_idt(idt_ptr);
-	asm volatile("sti");
+	set_interrupt();
 
 	log("checking if the interrupts are enabled");
 	if (are_interrupts_enabled())
