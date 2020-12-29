@@ -11,17 +11,17 @@ CC = i686-elf-gcc
 # architecture-specific configurations
 include src/$(ARCHDIR)/arch/make.conf
 
-YASMFLAGS = -pnasm $(ARCH_YASMFLAGS)
+YASMFLAGS = -pnasm -felf32 $(ARCH_YASMFLAGS)
 CFLAGS = -Wall -Wextra -ffreestanding -O3 $(ARCH_CFLAGS)
 
 # lists of files
 OBJS = \
- src/$(ARCHDIR)/arch/asm/isr.o \
  src/$(ARCHDIR)/arch/asm/load_gdt.o \
  src/$(ARCHDIR)/arch/asm/load_idt.o \
  src/$(ARCHDIR)/arch/asm/out_8.o \
  src/$(ARCHDIR)/arch/asm/set_interrupt.o \
  src/$(ARCHDIR)/arch/boot.o \
+ src/$(ARCHDIR)/arch/exceptions.o \
  src/$(ARCHDIR)/arch/pic.o \
  src/asd_kernel.o
 

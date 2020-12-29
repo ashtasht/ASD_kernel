@@ -5,14 +5,21 @@
 #ifndef PIC_H_
 #define PIC_H_
 
+/* The 8259 PICs bases */
+#define PIC_1_BASE 0x20
+#define PIC_2_BASE 0xA0
+
 #include <stdint.h>
 
 /* TODO use APIC instead */
 
 /*!
- * \brief Initializes both the 8259 PICs
+ * \brief Remaps the PICs
+ *
+ * \param base_1 The target base for the master PIC
+ * \param base_2 The target base for the slave PIC
  */
-void pics_init();
+void pics_remap(uint16_t, uint16_t);
 
 /*!
  * \brief Enables or disables a given IRQ
@@ -24,9 +31,9 @@ void pics_init();
  *
  * \returns The base address of the PIC of which mask was changed
  *
- * \see pic_write_irqs
+ * \see pics_write_irqs
  */
-uint8_t pic_irq_set(uint8_t, uint8_t, uint8_t *, uint8_t *);
+uint8_t pics_irq_set(uint8_t, uint8_t, uint8_t *, uint8_t *);
 
 /*!
  * \brief Writes the IRQ mask to the given 8259 PIC
@@ -34,13 +41,15 @@ uint8_t pic_irq_set(uint8_t, uint8_t, uint8_t *, uint8_t *);
  * \param pic_base[in] The base address of the targeted PIC
  * \param mask[in] The mask to write to the PIC
  *
- * \see pic_irq_set
+ * \see pics_irq_set
  */
-void pic_write_irqs(uint8_t, uint8_t);
+void pics_write_irqs(uint8_t, uint8_t);
 
 /*!
  * \brief Sends an EOI (end of interrupt) signal
+ *
+ * \param a The interrupt number
  */
-void pic_send_eoi(uint8_t);
+void pics_send_eoi(uint8_t);
 
 #endif

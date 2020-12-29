@@ -2,7 +2,6 @@
  * \file include/arch/i686/arch/gdt.h
  *
  * Contains the definition of the contents of the global descriptor table
- * \see AMD64 Architecture Programmer's Manual, Volume 2 --- 4.7
  */
 
 #ifndef GDT_H_
@@ -18,7 +17,9 @@
  * \param flags_0,flags_1 The flags of the memory segment
  *
  * \returns The entry encoded as 8 bytes
+ *
  */
+/* See the AMD64 Architecture Programmer's Manual, Volume 2 --- 4.7 */
 #define STRUCTURE_GDT_ENTRY(base, limit, flags_0, flags_1) \
 	(0 \
 		| ((uint64_t) (base) & 0xFF000000) \

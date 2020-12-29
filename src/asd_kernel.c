@@ -7,6 +7,7 @@
 #include "arch/asm/out_8.h"
 #include "arch/asm/set_interrupt.h"
 #include "arch/descriptor_table_selector.h"
+#include "arch/exceptions.h"
 #include "arch/gdt.h"
 #include "arch/idt.h"
 #include "arch/pic.h"
@@ -82,11 +83,29 @@ static inline void log_hex(uint64_t a)
 	log(string);
 }
 
-void yo()
+struct inf
 {
-	log("and her daddy has told her to go");
-	log("man you got interruptssssssss");
-	//pic_send_eoi(0);
+	uintptr_t ip;
+	uintptr_t cs;
+	uintptr_t flags;
+	uintptr_t sp;
+	uintptr_t ss;
+};
+void gpcoolcool(struct inf* f) {
+	log("General protection fault!");
+	log("wanna info?");
+	log("ip:");
+	log_hex(f->ip);
+	log("sp:");
+	log_hex(f->sp);
+	log("cs:");
+	log_hex(f->cs);
+	log("whatever ip:");
+	uint64_t * a;
+	a = f->ip;
+	log_hex(a);
+	
+	asm("hlt");
 }
 
 static inline bool are_interrupts_enabled() {
@@ -99,35 +118,33 @@ static inline bool are_interrupts_enabled() {
 
 void kernel_main()
 {
-	/* initialize the screen */
+	/* clear the screen */
 	clear_buffer();
-	log("VGA text mode screen cleared");
 
-	/* load the global descriptor table */
-	log("loading the GDT");
+	/* load the GDT */
 	struct descriptor_table_selector gdt_ptr;
 	gdt_ptr.limit = sizeof(gdt);
 	gdt_ptr.base = (uint32_t) & gdt;
 	load_gdt(gdt_ptr);
 
 	/* initialize the PICs */
-	log("initializing the PICs");
-	pics_init();
+	pics_remap(PIC_1_BASE, PIC_2_BASE);
 	uint8_t pic_1_mask = 0xFF;
 	uint8_t pic_2_mask = 0xFF;
-	//pic_irq_set(2, 1, & pic_1_mask, & pic_2_mask);
-	pic_write_irqs(pic_1_mask, pic_2_mask);
+	pics_write_irqs(pic_1_mask, pic_2_mask);
 
-	/* load the interrupt descriptor table */
-	log("loading the IDT");
+	/* set up the IDT */
 	uint64_t idt [256];
-	get_idt(idt);
 	struct descriptor_table_selector idt_ptr;
 	idt_ptr.limit = sizeof(idt);
 	idt_ptr.base = (uint32_t) & idt;
+
+	/* set up CPU exceptions handlers */
+	set_up_exceptions(idt);
 	load_idt(idt_ptr);
 	set_interrupt();
 
+	/* check if interrupts are enabled */
 	log("checking if the interrupts are enabled");
 	if (are_interrupts_enabled())
 	{
@@ -138,7 +155,5 @@ void kernel_main()
 		log("interrupts are not enabled");
 	}
 
-
-	/* clear and initialize the screen */
 	log("Welcome to ASD version 0.0.1!");
 }
